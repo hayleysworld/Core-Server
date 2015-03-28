@@ -1589,6 +1589,83 @@ var commands = exports.commands = {
 		// secret sysop command
 		room.add(target);
 	},
+	
+	sleeping: 'away',
+        eating: 'away',
+        studying: 'away',
+        anime: 'away',
+        gaming: 'away',
+        afk: 'away',
+        away: function(target, room, user, connection, cmd) {
+                var isAway;
+                var awaynames = ['- ⓈⓁⒺⒺⓅⒾⓃⒼ', '- ⒺⒶⓉⒾⓃⒼ', '- ⓈⓉⓊⒹⓎⒾⓃⒼ', '- ⒶⓃⒾⓂⒺ', '- ⒼⒶⓂⒾⓃⒼ', ' - ⒶⓌⒶⓎ'];
+                for (var i = 0; i < awaynames.length; i++) {
+                        if (user.name.indexOf(awaynames[i]) > -1) isAway = true;
+                }
+                if (!isAway) {
+                        switch (cmd) {
+                                case 'sleeping':
+                                        var awayMessage = 'is now sleeping. Nite!';
+                                        var awayName = '- ⓈⓁⒺⒺⓅⒾⓃⒼ';
+                                        break;
+                                case 'eating':
+                                        var awayName = '- ⒺⒶⓉⒾⓃⒼ';
+                                        if (!target) target = 'eating';
+                                        break;
+                                case 'studying':
+                                        var awayMessage = 'is now studying.';
+                                        var awayName = '- ⓈⓉⓊⒹⓎⒾⓃⒼ';
+                                        break;
+                                case 'anime':
+                                        var awayMessage = 'is now watching anime.';
+                                        var awayName = '- ⒶⓃⒾⓂⒺ';
+                                        break;
+                                case 'gaming':
+                                        var awayMessage = 'is now gaming.';
+                                        var awayName = '- ⒼⒶⓂⒾⓃⒼ';
+                                        break;
+                                default:
+                                        var awayName = ' - ⒶⓌⒶⓎ';
+                        }
+ 
+                        if (this.can('warn') && user.getIdentity(room.id).indexOf('!') === -1 && user.getIdentity().indexOf('‽') === -1) {
+                                var target2 = '(' + target + ')';
+                                if (!awayMessage) {
+                                        if (target.length < 1) {
+                                                this.add('|html|<b>- <font color = ' + color.get(user.userid) + '>' + user.name + '</font></b> is now away.');
+ 
+ 
+                                        } else {
+                                                this.add('|html|<b>- <font color = ' + color.get(user.userid) + '>' + user.name + '</font></b> is now away. ' + target2);
+                                        }
+                                } else {
+                                        this.add('|html|<b>- <font color = ' + color.get(user.userid) + '>' + user.name + '</font></b> ' + awayMessage);
+                                }
+                        }
+                        var newname = user.name + awayName;
+                        user.forceRename(newname, undefined, true);
+                        user.blockChallenges = true;
+ 
+                } else {
+                        return this.sendReply("You have already been set as away.");
+                }
+        },
+ 
+        unafk: 'back',
+        back: function(target, room, user) {
+                var awaynames = ['- ⓈⓁⒺⒺⓅⒾⓃⒼ', '- ⒺⒶⓉⒾⓃⒼ', '- ⓈⓉⓊⒹⓎⒾⓃⒼ', '- ⒶⓃⒾⓂⒺ', '- ⒼⒶⓂⒾⓃⒼ', ' - ⒶⓌⒶⓎ'];
+                for (var i = 0; i < awaynames.length; i++) {
+                        if (user.name.indexOf(awaynames[i]) > -1) {
+                                originalname = user.name.substring(0, user.name.length - awaynames[i].length);
+                                user.forceRename(originalname, undefined, true);
+                                user.blockChallenges = false;
+                                if (this.can('lock') && user.getIdentity(room.id).indexOf('!') === -1 && user.getIdentity().indexOf('‽') === -1)
+                                        this.add('|html|<b>- <font color = ' + color.get(user.userid) + '>' + user.name + '</font></b> is back.');
+                                break;
+                        } else {
+                                if (i == 5) return this.sendReply('You are not away.');
+                                continue);
+                        }
 
 	/*********************************************************
 	 * Help commands
